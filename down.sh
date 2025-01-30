@@ -1,5 +1,5 @@
 export CUDA_VISIBLE_DEVICES=1
-model_name=TSMixer
+model_name=SimpleTSF
 channel_function=RNN
 temporal_function=down
 
