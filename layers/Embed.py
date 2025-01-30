@@ -185,56 +185,11 @@ class PatchEmbedding(nn.Module):
         x = self.padding_patch_layer(x)
         x = x.unfold(dimension=-1, size=self.patch_len, step=self.stride)
         x = torch.reshape(x, (x.shape[0] * x.shape[1], x.shape[2], x.shape[3]))
-        # print(x.shape)
         # Input encoding
         x_emb = self.value_embedding(x) 
         pos = self.position_embedding(x)
 
-        patch_sim = F.cosine_similarity(x, x, dim=-1)
-        patch_sim = (patch_sim + 1)/2
-        emb_sim = F.cosine_similarity(x_emb, x_emb, dim=-1)
-        emb_sim = (emb_sim + 1)/2
-        m = 0.5 * (patch_sim + emb_sim)
-        js_div = 0.5 * (F.kl_div(patch_sim.log(), m, reduction='batchmean') + F.kl_div(emb_sim.log(), m, reduction='batchmean'))
-        # print(js_div)
-
         return self.dropout(x_emb + pos), n_vars, js_div
-
-
-class PatchEmbedding_RNN(nn.Module):
-    def __init__(self, d_model, patch_len, stride, padding, dropout):
-        super(PatchEmbedding_RNN, self).__init__()
-        # Patching
-        self.patch_len = patch_len
-        self.stride = stride
-        self.d_model = d_model
-        self.padding_patch_layer = nn.ReplicationPad1d((0, padding))
-
-        # Backbone, Input encoding: projection of feature vectors onto a d-dim vector space
-        self.value_embedding = nn.Linear(patch_len, d_model, bias=False)
-
-        # Positional embedding
-        self.position_embedding = PositionalEmbedding(d_model)
-        
-        self.rnn = torch.nn.LSTM(input_size=1,hidden_size=d_model,num_layers=1,batch_first=True)
-
-        # Residual dropout
-        self.dropout = nn.Dropout(dropout)
-
-    def forward(self, x):
-        # do patching
-        n_vars = x.shape[1]
-        x = self.padding_patch_layer(x)
-        x = x.unfold(dimension=-1, size=self.patch_len, step=self.stride)
-        x = torch.reshape(x, (x.shape[0] * x.shape[1], x.shape[2], x.shape[3]))
-        pos = self.position_embedding(x)
-        _, n_patch, p_len = x.shape
-        x = torch.reshape(x, (x.shape[0] * x.shape[1], x.shape[2], 1))
-        # print(self.rnn(x)[1][1].shape)
-        x = self.rnn(x)[1][1].reshape(-1, n_patch, self.d_model) + pos
-        # Input encoding
-        # x = self.value_embedding(x) + self.position_embedding(x)
-        return self.dropout(x), n_vars
 
 
 

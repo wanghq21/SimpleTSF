@@ -44,46 +44,6 @@ class DSAttention(nn.Module):
         else:
             return V.contiguous(), None
 
-
-class FullAttention1(nn.Module):
-    def __init__(self, mask_flag=True, factor=5, scale=None, attention_dropout=0.1, output_attention=False, alpha=0):
-        super(FullAttention1, self).__init__()
-        self.scale = scale
-        self.mask_flag = mask_flag
-        self.output_attention = output_attention
-        self.dropout = nn.Dropout(attention_dropout)
-        self.relu = torch.nn.ReLU()
-        self.alpha = alpha
-
-    def forward(self, queries, keys, values, attn_mask, tau=None, delta=None):
-        B, L, H, E = queries.shape
-        _, S, _, D = values.shape
-        scale = self.scale or 1. / sqrt(E)
-        scores = torch.einsum("blhe,bshe->bhls", queries, keys)
-        # scores = self.relu(scores)
-
-        if self.mask_flag:
-            if attn_mask is None:
-                attn_mask = TriangularCausalMask(B, L, device=queries.device)
-
-            scores.masked_fill_(attn_mask.mask, -np.inf)
-
-        # A = self.dropout((torch.softmax(scale * scores, dim=-1) - 1/S))
-        # A = self.dropout(torch.softmax(scale * scores, dim=-1))
-
-        A = torch.softmax(scale * scores, dim=-1)
-        mean = A.mean(-1, keepdim=True).detach()
-        std = torch.sqrt(torch.var(A, dim=-1, keepdim=True)).detach()
-        A = A - (mean - self.alpha * std)
-        A = self.relu(A) + (mean - self.alpha * std)
-
-        V = torch.einsum("bhls,bshd->blhd", A, values)
-
-        if self.output_attention:
-            return V.contiguous(), A
-        else:
-            return V.contiguous(), None
-
 class FullAttention(nn.Module):
     def __init__(self, mask_flag=True, factor=5, scale=None, attention_dropout=0.1, output_attention=False, alpha=0):
         super(FullAttention, self).__init__()
@@ -105,15 +65,7 @@ class FullAttention(nn.Module):
                 attn_mask = TriangularCausalMask(B, L, device=queries.device)
             scores.masked_fill_(attn_mask.mask, -np.inf)
 
-        # A = self.dropout((torch.softmax(scale * scores, dim=-1) - 1/S))
         A = self.dropout(torch.softmax(scale * scores, dim=-1))
-
-        # A = (torch.softmax(scale * scores, dim=-1))
-        # mean = A.mean(dim=-1, keepdim=True).detach()
-        # std = torch.sqrt(torch.var(A, dim=-1, keepdim=True)).detach()
-        # A = A - (mean - self.alpha * std)
-        # A = self.relu(A) + (mean - self.alpha * std)
-
         V = torch.einsum("bhls,bshd->blhd", A, values)
 
         if self.output_attention:
