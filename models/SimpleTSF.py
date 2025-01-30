@@ -14,7 +14,7 @@ class RMSNorm(nn.Module):
     def __init__(self, normalized_shape, eps=1e-8):
         super(RMSNorm, self).__init__()
         self.eps = eps
-        self.scale = nn.Parameter(torch.ones(*normalized_shape))  # 可学习的缩放参数
+        self.scale = nn.Parameter(torch.ones(*normalized_shape))  
 
     def forward(self, x):
         rms = torch.sqrt(torch.mean(x**2, dim=(-2, -1), keepdim=True) + self.eps)
