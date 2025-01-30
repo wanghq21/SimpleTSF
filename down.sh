@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=1
 model_name=TSMixer
 channel_function=RNN
-temporal_function=patch
+temporal_function=down
 
 
 for len in    96 192 336 720
