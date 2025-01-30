@@ -1,52 +1,13 @@
 import os
 import torch
-from models import Autoformer, Transformer, TimesNet, Nonstationary_Transformer, DLinear, FEDformer, \
-    Informer, LightTS, Reformer, ETSformer, Pyraformer, PatchTST, MICN, Crossformer, FiLM, iTransformer, \
-    Koopa, TiDE, FreTS, TimeMixer, TSMixer, SegRNN, MambaSimple, TemporalFusionTransformer, SimpleNet,\
-    Transformer2, Image, ModernTCN, Pathformer, Freq, Trans, RNN, CNN, SparseTSF, FITS, SOFTS, SOFTS2
+from models import SimpleTSF
 
 
 class Exp_Basic(object):
     def __init__(self, args):
         self.args = args
         self.model_dict = {
-            'TimesNet': TimesNet,
-            'Autoformer': Autoformer,
-            'Transformer': Transformer,
-            'Nonstationary_Transformer': Nonstationary_Transformer,
-            'DLinear': DLinear,
-            'FEDformer': FEDformer,
-            'Informer': Informer,
-            'LightTS': LightTS,
-            'Reformer': Reformer,
-            'ETSformer': ETSformer,
-            'PatchTST': PatchTST,
-            'Pyraformer': Pyraformer,
-            'MICN': MICN,
-            'Crossformer': Crossformer,
-            'FiLM': FiLM,
-            'iTransformer': iTransformer,
-            'Koopa': Koopa,
-            'TiDE': TiDE,
-            'FreTS': FreTS,
-            'MambaSimple': MambaSimple,
-            'TimeMixer': TimeMixer,
-            'TSMixer': TSMixer,
-            'SegRNN': SegRNN,
-            'TemporalFusionTransformer': TemporalFusionTransformer,
-            'SimpleNet': SimpleNet,
-            'Transformer2': Transformer2,
-            'Image':Image,
-            'Freq':Freq,
-            'Trans':Trans,
-            'RNN':RNN,
-            'CNN':CNN,
-            'SparseTSF':SparseTSF,
-            'FITS':FITS,
-            'SOFTS':SOFTS,
-            'SOFTS2':SOFTS2,
-            'Pathformer':Pathformer,
-            'ModernTCN':ModernTCN
+            'SimpleTSF': SimpleTSF,
         }
         if args.model == 'Mamba':
             print('Please make sure you have successfully installed mamba_ssm')
