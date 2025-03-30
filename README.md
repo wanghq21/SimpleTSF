@@ -19,6 +19,6 @@ sh down.sh
 ```
 
 <p align="center">
-<img src=".a.png" height = "150" alt="" align=center />
+<img src="a.png" height = "200" alt="" align=center />
 <br><br>
 </p>
