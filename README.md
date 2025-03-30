@@ -18,7 +18,3 @@ sh patch.sh
 sh down.sh
 ```
 
-<p align="center">
-<img src="a.png" height = "200" alt="" align=center />
-<br><br>
-</p>
